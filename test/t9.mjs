@@ -1,6 +1,13 @@
 //import { Abbrevations as D } from '../lib/dimensions.mjs';
 //import { Abbrevations as U } from '../lib/derived_units.mjs';
 
+//NOTE: ChatGPT discussion (ignore cursed beginning) https://chatgpt.com/share/6792bb29-c20c-8005-939c-d8a1c333f7ef
+
+//NOTE: 0⁰ could be a concern since it is undefined.
+//NOTE: Our product currently assumes commutative operations but we may want to support non-commutative ones as well
+//NOTE: Handle division by 0
+
+
 import { All_Dimensions as D } from '../lib/dimensions.mjs';
 import { All_Units as U } from '../lib/derived_units.mjs';
 
