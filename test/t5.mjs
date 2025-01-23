@@ -53,3 +53,9 @@ Product {
   ]
 }
 */
+
+
+console.log()
+const resolved_expr2 = (new Resolver({ ...D, ...U })).resolve(Simple_Parser('M·L²·T⁻²'));
+console.log(inspect(resolved_expr2, { depth: null, colors: true }));
+
