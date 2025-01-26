@@ -1,3 +1,6 @@
+
+// NEXT UP - product normalization
+
 //import { Abbrevations as D } from '../lib/dimensions.mjs';
 //import { Abbrevations as U } from '../lib/derived_units.mjs';
 
