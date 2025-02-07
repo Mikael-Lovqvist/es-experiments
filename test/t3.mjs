@@ -1,6 +1,6 @@
-//import * as D from '../lib/dimensions.mjs';
-import { Abbrevations as U } from '../lib/units.mjs';
-//import { Abbrevations as P } from '../lib/prefixes.mjs';
+//import * as D from 'ml-es-experiments/dimensions.mjs';
+import { Abbrevations as U } from 'ml-es-experiments/units.mjs';
+//import { Abbrevations as P } from 'ml-es-experiments/prefixes.mjs';
 
 console.log(U.kg.format_value(1, U.kg.default_prefix));		//	1 kilogram
 console.log(U.kg.format_value(3, U.kg.default_prefix));		//	3 kilograms

@@ -1,8 +1,8 @@
 
 // NEXT UP - product normalization
 
-//import { Abbrevations as D } from '../lib/dimensions.mjs';
-//import { Abbrevations as U } from '../lib/derived_units.mjs';
+//import { Abbrevations as D } from 'ml-es-experiments/dimensions.mjs';
+//import { Abbrevations as U } from 'ml-es-experiments/derived_units.mjs';
 
 //NOTE: ChatGPT discussion (ignore cursed beginning) https://chatgpt.com/share/6792bb29-c20c-8005-939c-d8a1c333f7ef
 
@@ -11,18 +11,19 @@
 //NOTE: Handle division by 0
 
 
-import { All_Dimensions as D } from '../lib/dimensions.mjs';
-import { All_Units as U } from '../lib/derived_units.mjs';
+import { All_Dimensions as D } from 'ml-es-experiments/dimensions.mjs';
+import { All_Units as U } from 'ml-es-experiments/derived_units.mjs';
 
-//import * as U from '../lib/units.mjs';
-import * as CT from '../lib/core_types.mjs';
-import * as T from '../lib/tokens.mjs';
-import * as F from '../lib/functions.mjs';
-import * as DU from '../lib/derived_units.mjs';
+//import * as U from 'ml-es-experiments/units.mjs';
+import * as CT from 'ml-es-experiments/core_types.mjs';
+import * as T from 'ml-es-experiments/tokens.mjs';
+import * as F from 'ml-es-experiments/functions.mjs';
+import * as DU from 'ml-es-experiments/derived_units.mjs';
 
 
-import { Simple_Parser } from '../lib/simple_parser.mjs';
-import { Dimensional_Resolver, Type_Resolver } from '../lib/resolver.mjs';
+import { Simple_Parser } from 'ml-es-experiments/simple_parser.mjs';
+import { Type_Resolver } from 'ml-es-experiments/resolver.mjs';
+import { Dimensional_Resolver } from 'ml-es-experiments/dimensional_resolver.mjs';
 
 const State_Serializer = new Type_Resolver('State_Serializer');
 

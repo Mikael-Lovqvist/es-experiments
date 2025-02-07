@@ -1,5 +1,5 @@
-import * as DU from '../lib/derived_units.mjs';
-import { Simple_Parser } from '../lib/simple_parser.mjs';
+import * as DU from 'ml-es-experiments/derived_units.mjs';
+import { Simple_Parser } from 'ml-es-experiments/simple_parser.mjs';
 
 
 //This only works in node, just for testing

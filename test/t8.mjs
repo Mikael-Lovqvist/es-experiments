@@ -1,8 +1,8 @@
-import { Abbrevations as D } from '../lib/dimensions.mjs';
-import { Abbrevations as U } from '../lib/derived_units.mjs';
+import { Abbrevations as D } from 'ml-es-experiments/dimensions.mjs';
+import { Abbrevations as U } from 'ml-es-experiments/derived_units.mjs';
 
-import { Simple_Parser } from '../lib/simple_parser.mjs';
-import { Dimensional_Resolver } from '../lib/resolver.mjs';
+import { Simple_Parser } from 'ml-es-experiments/simple_parser.mjs';
+import { Dimensional_Resolver } from 'ml-es-experiments/dimensional_resolver.mjs';
 
 
 //This only works in node, just for testing

@@ -1,0 +1,15 @@
+{
+  "name": "ml-es-experiments",
+  "version": "0.0.1",
+  "description": "Mikael Lövqvist's ESM Experiments",
+  "repository": {
+    "type": "git",
+    "url": "github.com:Mikael-Lovqvist/es-experiments.git"
+  },
+  "license": "SEE LICENSE IN license.md",
+  "author": "Mikael Lövqvist",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

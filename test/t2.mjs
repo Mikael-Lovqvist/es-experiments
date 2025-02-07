@@ -1,4 +1,4 @@
-import * as G from '../lib/generative_factories.mjs';
+import * as G from 'ml-es-experiments/generative_factories.mjs';
 
 const f_list = G.Namespace([
 	G.Function_Definition('hello', ['a', 'b'], 'return a + b'),

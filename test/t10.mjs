@@ -5,7 +5,7 @@
 
 */
 
-import { Simple_Parser } from '../lib/simple_parser.mjs';
+import { Simple_Parser } from 'ml-es-experiments/simple_parser.mjs';
 
 
 class Vector {
