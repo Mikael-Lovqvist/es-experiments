@@ -43,10 +43,6 @@
 
 */
 
-class S {
-	static Rule = Symbol('Rule');
-}
-
 
 class TOKEN {
 	static WHITESPACE = /\w+/;
@@ -63,10 +59,30 @@ class Default_Match {
 		this.value = value;
 		this.index = index;
 		this.end_index = end_index;
-		this[S.Rule] = rule;	//We could refine this later by not hijacking the match objects and clean things up
+		this.rule = rule;
 	}
+
+	get pending_index() {
+		if (this.end_index === null) {
+			return null;
+		} else {
+			return this.end_index;
+		}
+	}
+
 };
 
+class Pattern_Match {
+	constructor(match, rule) {
+		this.match = match;
+		this.rule = rule;
+	}
+
+	get pending_index() {
+		return this.match.index + this.match[0].length;
+	}
+
+};
 
 
 
@@ -109,8 +125,21 @@ class Simple_Parser_Rule_List {
 
 	feed(text, position=0) {
 
-		for (const M of this.find_matches(text, position)) {
-			console.log('M', M);
+		const result = [];
+
+		while (true) {
+			const new_chunk = [...this.find_matches(text, position)];
+
+			if (new_chunk.length) {
+				position = new_chunk.at(-1).pending_index;
+				result.push(...new_chunk);
+			} else {
+				position = null;
+			}
+
+			if (position === null) {
+				return result;
+			}
 		}
 
 	}
@@ -131,8 +160,7 @@ class Simple_Parser_Rule_List {
 				pattern.lastIndex = position;
 				const match = pattern.exec(text);
 				if (match) {
-					match[S.Rule] = rule;
-					yield match;
+					yield new Pattern_Match(match, rule);
 					return;
 				}
 			}
@@ -147,9 +175,8 @@ class Simple_Parser_Rule_List {
 				const match = pattern.exec(text);
 
 				if (match) {
-					if ((best_match === undefined) || (best_match.index > match.index)) {
-						match[S.Rule] = rule;
-						best_match = match;
+					if ((best_match === undefined) || (best_match.match.index > match.index)) {
+						best_match = new Pattern_Match(match, rule);
 					}
 				}
 			}
@@ -165,9 +192,9 @@ class Simple_Parser_Rule_List {
 		}
 
 		// There was a match, check the head
-		const head = text.slice(position, best_match.index);
+		const head = text.slice(position, best_match.match.index);
 		if (head.length) {
-			yield this._handle_default_match(head, position, best_match.index);
+			yield this._handle_default_match(head, position, best_match.match.index);
 		}
 
 		yield best_match;
@@ -210,8 +237,12 @@ const pdef = new Simple_Parser_Definition({
 
 //pdef.named_rules.string_innards.feed('\\"hello\\" world!');
 
-pdef.named_rules.test.feed('em2pty');
-//pdef.named_rules.test.feed('2---1--1');
+//const res = pdef.named_rules.test.feed('blargh');
+const res = pdef.named_rules.test.feed('##2---1--1');
+
+
+console.log(res);
+
 
 
 
