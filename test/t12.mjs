@@ -123,22 +123,20 @@ class Simple_Parser_Rule_List {
 		}
 	}
 
-	feed(text, position=0) {
-
-		const result = [];
+	*feed(text, position=0) {
 
 		while (true) {
 			const new_chunk = [...this.find_matches(text, position)];
 
 			if (new_chunk.length) {
 				position = new_chunk.at(-1).pending_index;
-				result.push(...new_chunk);
+				yield* new_chunk;
 			} else {
 				position = null;
 			}
 
 			if (position === null) {
-				return result;
+				return;
 			}
 		}
 
@@ -237,11 +235,14 @@ const pdef = new Simple_Parser_Definition({
 
 //pdef.named_rules.string_innards.feed('\\"hello\\" world!');
 
-//const res = pdef.named_rules.test.feed('blargh');
-const res = pdef.named_rules.test.feed('##2---1--1');
+//const test_string = '##2---1--1';
+const test_string = 'blaargh';
+
+for (const M of pdef.named_rules.test.feed(test_string)) {
+	console.log(M);
+}
 
 
-console.log(res);
 
 
 
