@@ -1,4 +1,52 @@
 // Step 1 - define a simple parser that in turn uses another one. Classical one could be expressions consisting of paranthesis and strings with some simple escape.
+import { inspect } from 'util';
+
+
+//TODO - when moving to library this should live in its own module that we could import as A or PA for parser action perhaps
+class Push_To_Parent {
+	constructor(type) {
+		this.type = type;
+	}
+}
+
+class Enter_Parser {
+	constructor(name) {
+		this.name = name;
+	}
+}
+
+
+class PA {
+	static PUSH_TO_RESULT = Symbol('AS.PUSH_TO_RESULT');
+	static Push_To_Parent = Push_To_Parent;
+	static Enter_Parser = Enter_Parser;
+}
+
+
+
+
+//Move to iterator util module
+
+class Switchable_Iterator {
+	constructor(iterator=null) {
+		this.iterator = iterator;
+	}
+
+	switch_to(iterator) {
+		this.iterator = iterator;
+	}
+
+	next() {
+		return this.iterator.next();
+	}
+
+	[Symbol.iterator]() {
+		return this;
+	}
+
+}
+
+
 
 /*
 	Specification in EBNF-like language (not formally defined yet)
@@ -53,6 +101,14 @@ class TOKEN {
 };
 
 
+// Refactor naming to reflect what is a rule, pattern, match, action and so forth
+
+class Sequence_Match {
+	constructor(type, sequence) {
+		this.type = type;
+		this.sequence = sequence;
+	}
+}
 
 class Default_Match {
 	constructor(value, index, end_index, rule) {
@@ -90,6 +146,52 @@ class Simple_Parser_Definition {
 	constructor(named_rules) {
 		this.named_rules = named_rules;
 	}
+
+	parse(rule_name, source, position=0, additional_context={}) {
+		const ctx = {
+			stack: [[]],
+			parser: this,
+			named_rule: rule_name,
+			source: source,
+		};
+
+		ctx.parser.feed(ctx, position);
+		return ctx.stack.pop();	//TODO - verify stack is sound
+	}
+
+	feed(ctx, position) {
+		const rule_set = this.named_rules[ctx.named_rule];
+		const iterator = new Switchable_Iterator(rule_set.feed(ctx.source, position));
+
+		for (const M of iterator) {
+
+			const pending_result = ctx.stack.at(-1);
+
+			const action = M.rule.handler({
+				...ctx,
+				match: M,
+			});
+
+			if (action === PA.PUSH_TO_RESULT) {
+				pending_result.push(M);
+			} else if (action instanceof PA.Push_To_Parent) {
+
+				const popped_from_stack = ctx.stack.pop();
+				const pending_result = ctx.stack.at(-1);
+				pending_result.push(new Sequence_Match(action.type, popped_from_stack));
+
+			} else if (action instanceof PA.Enter_Parser) {
+				ctx.stack.push([]);
+				const rule_set = this.named_rules[action.name];
+				iterator.switch_to(rule_set.feed(ctx.source, M.pending_index));
+			} else {
+				throw `Unknown action: ${inspect(action, { depth: null, colors: true })}`;
+			}
+
+		}
+
+	}
+
 };
 
 
@@ -145,7 +247,7 @@ class Simple_Parser_Rule_List {
 	_handle_default_match(value, index, end_index=null) {
 		const default_rule = this.default_rule;
 		if (!default_rule) {
-			throw `Parsing failed, no match for ${JSON.stringify(value)}` ; //TODO actual exception object
+			throw `Parsing failed, no match for ${JSON.stringify(value)} (${inspect(this, { depth: null, colors: true })})` ; //TODO actual exception object
 		}
 		return new Default_Match(value, index, end_index, default_rule);
 	}
@@ -201,50 +303,35 @@ class Simple_Parser_Rule_List {
 
 };
 
-/*
- else if (rule instanceof Simple_Default_Rule) {
-				default_rule = rule;
-			}*/
-
 
 const pdef = new Simple_Parser_Definition({
 
-	string_innards: new Simple_Parser_Rule_List([
-		new Simple_Pattern_Rule(TOKEN.ESCAPED_DOUBLE_QUOTE, (ctx) => {
-			console.log('DBL QUOT', ctx);
-		}),
-		new Simple_Default_Rule((ctx) => {
-			console.log('DEFAULT', ctx);
+	string: new Simple_Parser_Rule_List([
+		new Simple_Pattern_Rule(TOKEN.DOUBLE_QUOTE, (ctx) => {
+			return new PA.Enter_Parser('string_innards');
 		}),
 	]),
 
-	test: new Simple_Parser_Rule_List([
-		new Simple_Pattern_Rule(/1/, (ctx) => {
-			console.log('ONE', ctx);
+	string_innards: new Simple_Parser_Rule_List([
+		new Simple_Pattern_Rule(TOKEN.DOUBLE_QUOTE, (ctx) => {
+			return new PA.Push_To_Parent(ctx.named_rule);
 		}),
-		new Simple_Pattern_Rule(/2/, (ctx) => {
-			console.log('TWO', ctx);
+		new Simple_Pattern_Rule(TOKEN.ESCAPED_DOUBLE_QUOTE, (ctx) => {
+			return PA.PUSH_TO_RESULT;
 		}),
 		new Simple_Default_Rule((ctx) => {
-			console.log('DEFAULT', ctx);
+			return PA.PUSH_TO_RESULT;
 		}),
 	]),
+
 
 });
 
 
-//pdef.named_rules.string_innards.feed('\\"hello\\" world!');
-
 //const test_string = '##2---1--1';
-const test_string = 'blaargh';
-
-for (const M of pdef.named_rules.test.feed(test_string)) {
-	console.log(M);
-}
+//const test_string = 'blaargh';
+const test_string = '"\\"hello\\" world" more stuff';
 
 
-
-
-
-
-//console.log(pdef.named_rules.string_innards);
+const res = pdef.parse('string', test_string);
+console.log(inspect(res, { depth: null, colors: true }));
