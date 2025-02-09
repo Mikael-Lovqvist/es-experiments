@@ -27,6 +27,8 @@ import * as PRL from 'ml-es-experiments/parser_rule_list.mjs';
 import { Character_Mapping } from 'ml-es-experiments/string_utils.mjs';
 
 
+
+
 class TOKEN {
 	//Single character
 	static LEFT_PARENTHESIS = /\(/;
@@ -51,9 +53,6 @@ class TOKEN {
 	//Translations
 	static SUPERSCRIPT_TRANSLATION = new Character_Mapping('⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹', '+-0123456789');
 	static SUBSCRIPT_TRANSLATION = new Character_Mapping('₀₁₂₃₄₅₆₇₈₉', '0123456789');
-
-
-
 
 };
 
