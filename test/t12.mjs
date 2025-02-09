@@ -61,9 +61,6 @@ class TOKEN {
 
 // Refactor naming to reflect what is a rule, pattern, match, action and so forth
 
-
-
-
 const pdef = new P.Rule_Based_Parser({
 
 	string: new PRL.Parser_Rule_List([
