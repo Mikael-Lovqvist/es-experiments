@@ -109,7 +109,7 @@ const test_string = 'f(P₁ - P₀) + P₀';
 const res = new PM.Sequence_Match(TS.EXPRESSION, pdef.parse('expression', test_string));	//Because we haven't added an outer wrapper yet
 //console.log(inspect(res, { depth: null, colors: true }));
 
-import { Mapping_Resolver, Structural_Resolver } from 'ml-es-experiments/resolver.mjs';
+import { Mapping_Resolver, Structural_Resolver, HANDLER } from 'ml-es-experiments/resolver.mjs';
 
 const SUPERSCRIPT_TRANSLATION = new Character_Mapping('⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹', '+-0123456789');
 const SUBSCRIPT_TRANSLATION = new Character_Mapping('₀₁₂₃₄₅₆₇₈₉', '0123456789');
@@ -120,7 +120,7 @@ const mr = new Mapping_Resolver();
 const SEQ_BINOP = new RC.Member_of_Set(new Set([AST.Addition, AST.Subtraction, AST.Multiplication, AST.Division, AST.Power]));
 
 
-const stack_tail_rules = new Structural_Resolver('stack_tail_rules', false);
+const stack_tail_rules = new Structural_Resolver('stack_tail_rules', false, HANDLER);
 
 stack_tail_rules.add_identity_tail_sequence_rule([AST.Subtraction, AST.Subtraction], (item, ctx) => {
 	ctx.multi_pop(2);
@@ -253,15 +253,11 @@ class Resolver_Context {
 
 	check_reduce() {
 		//console.log(`Should check stack of ${this.stack.length} items`);
-
-		stack_tail_rules.resolve(this.stack, this);
-
-		console.log(`Stack is ${short_stack_summary(this.stack)}`);
+		return stack_tail_rules.resolve(this.stack, this);
 	}
 
 	push(item) {	//TODO - better name to indicate this is intermediate input
 		this.stack.push(item);
-		this.check_reduce();
 	}
 
 	pop(mandatory=true) {
@@ -284,6 +280,18 @@ class Resolver_Context {
 	}
 
 	get_final_reduction() {
+
+		console.log('Final reduction');
+		while (true) {
+			console.log(`Stack is ${short_stack_summary(this.stack)}`);
+
+			if (!this.check_reduce()) {
+				break;
+			} else {
+				console.log('Performed reduction');
+			}
+		}
+
 		if (this.stack.length >= 1) {
 			return new AST.Sub_Expression(this.stack);
 		} else {
