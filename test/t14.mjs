@@ -1,3 +1,4 @@
+// This one should be deprecated in favor of whatever comes out of t15.mjs
 //TODO: This should be rewritten a bit. We need to add a reducing ruleset that can boil down expressions.
 /*
 
@@ -72,7 +73,8 @@ const pdef = new P.Rule_Based_Parser({
 
 //const test_string = '100V / (10 MΩ + 10Ω)';
 //const test_string = '(230 sqrt(2))V / (10 MΩ + 10Ω) + 5²';
-const test_string = '(P₁ - P₀)f + P₀';
+const test_string = 'f(P₁ - P₀) + P₀';
+
 
 const res = new PM.Sequence_Match(TS.EXPRESSION, pdef.parse('expression', test_string));	//Because we haven't added an outer wrapper yet
 //console.log(inspect(res, { depth: null, colors: true }));
