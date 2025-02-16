@@ -16,11 +16,13 @@
 
 */
 
-import { Character_Mapping } from 'ml-es-experiments/string_utils.mjs';
 import * as P from 'ml-es-experiments/parser.mjs';
 import * as PR from 'ml-es-experiments/parser_rule.mjs';
 import * as PRL from 'ml-es-experiments/parser_rule_list.mjs';
 import * as PA from 'ml-es-experiments/parser_action.mjs';
+
+import { Structural_Resolver } from 'ml-es-experiments/resolver.mjs';
+import { Rule } from 'ml-es-experiments/resolver_rules.mjs';
 
 const Token_Definitions = P.Create_Symbols_And_Patterns({
 
@@ -118,3 +120,35 @@ class Symbolic_Rewrite_Rule {
 
 
 const r = define_rule('Head: Op₀ - - Op₁ → Op₀ + Op₁');
+
+
+class Regexp_Structural_Resolver extends Structural_Resolver {
+	add_regexp_rule(pattern, handler) {
+		this.rules.push(new Rule(item => pattern.test(item.value), handler));
+	}
+}
+
+const resolve_rules = new Regexp_Structural_Resolver('resolve_rules');
+
+
+resolve_rules.add_regexp_rule(/Op[₀₁₂₃₄₅₆₇₈₉0-9]*/, (item, ctx) => {
+	return 'new RC.Instance(AST.Operand)';
+})
+
+resolve_rules.add_regexp_rule(/-/, (item, ctx) => {
+	return 'new RC.Identity(AST.Subtraction)';
+})
+
+resolve_rules.add_regexp_rule(/\+/, (item, ctx) => {
+	return 'new RC.Identity(AST.Addition)';
+})
+
+console.log(resolve_rules.resolve_array(r.right));
+
+/*	OUTPUT
+[
+  'new RC.Instance(AST.Operand)',
+  'new RC.Identity(AST.Addition)',
+  'new RC.Instance(AST.Operand)'
+]
+*/
