@@ -1,3 +1,6 @@
+// NEXT TIME - hybrid approach of head and tail based matching for late reduction since we had issues with early reduction.
+
+
 //TODO: This should be rewritten a bit. We need to add a reducing ruleset that can boil down expressions.
 /*
 
